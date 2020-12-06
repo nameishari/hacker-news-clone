@@ -1,7 +1,7 @@
 const baseUri = 'https://hacker-news.firebaseio.com/v0/'
 const json = '.json?print=pretty'
 
-function getItem(id) {
+export function getItem(id) {
     return fetch(baseUri + `item/${id}${json}`)
         .then((res) => res.json())
 }
@@ -16,6 +16,10 @@ function removeDeleted(stories) {
 
 function onlyStories(stories) {
     return stories.filter(({ type }) => type === 'story')
+}
+
+function onlyComments(stories) {
+    return stories.filter(({ type }) => type === 'comment')
 }
 
 export function getStories(type) {
@@ -39,4 +43,9 @@ export function getUser(id) {
 export function getStoriesByIds(ids) {
     return Promise.all(ids.slice(0, 65).map(getItem))
         .then((items) => removeDeleted(onlyStories(removeDead(items))))
+}
+
+export function getComments(ids) {
+    return Promise.all(ids.map(getItem))
+        .then((items) => removeDeleted(onlyComments(removeDead(items))))
 }

@@ -18,7 +18,7 @@ export default function StoriesList({ stories }) {
                 stories.map((story) => (
                     <li key={story.id}>
                         <p style={styles.title}><a href={story.url} target='_blank' className='no-style'>{story.title}</a></p>
-                        <MetaInfo by={story.by} time={story.time} comments={story.descendants}/>
+                        <MetaInfo by={story.by} time={story.time} comments={story.descendants} storyId={story.id}/>
                     </li>
                 ))
             }
