@@ -5,6 +5,7 @@ import Loading from './Loading'
 import StoriesList from './StoriesList'
 import { formatDate } from '../util/DateUtil'
 import MetaInfo from './MetaInfo'
+import { ThemeConsumer } from '../contexts/theme'
 
 export default class User extends React.Component {
     state = {
@@ -33,25 +34,32 @@ export default class User extends React.Component {
     render() {
         const { user, stories } = this.state
         return (
-            <React.Fragment>
+            <ThemeConsumer>
                 {
-                    user == null
-                        ? <Loading text='User is Loading' />
-                        : <React.Fragment>
-                            <p className='dark-title'>{user.id}</p>
-                            <MetaInfo by={user.id} time={user.created} karma={user.karma}/>
-                        </React.Fragment>
-                }
+                    ({ theme }) => (
+                        <React.Fragment>
+                            {
+                                user === null
+                                    ? <Loading text='User is Loading' />
+                                    : <React.Fragment>
+                                        <p className={theme === 'light' ? 'title dark-color' : 'title light-color'}>{user.id}</p>
+                                        <MetaInfo by={user.id} time={user.created} karma={user.karma} />
+                                        <p className={theme === 'light' ? 'dark-color' : 'light-color'}>{user.about}</p>
+                                    </React.Fragment>
+                            }
 
-                {
-                    user != null && (stories == null
-                        ? <Loading text='User stories are loading' />
-                        : <React.Fragment>
-                            <p className='dark-title'>Posts</p>
-                            <StoriesList stories={stories} />
-                        </React.Fragment>)
+                            {
+                                user !== null && (stories === null
+                                    ? <Loading text='User stories are loading' />
+                                    : <React.Fragment>
+                                        <p className={theme === 'light' ? 'title dark-color' : 'title light-color'}>Posts</p>
+                                        <StoriesList stories={stories} />
+                                    </React.Fragment>)
+                            }
+                        </React.Fragment>
+                    )
                 }
-            </React.Fragment>
+            </ThemeConsumer>
         )
     }
 }

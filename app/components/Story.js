@@ -3,6 +3,7 @@ import { getItem, getComments } from '../util/api'
 import MetaInfo from './MetaInfo'
 import Loading from './Loading'
 import queryString from 'query-string'
+import { ThemeConsumer } from '../contexts/theme'
 
 export default class Story extends React.Component {
 
@@ -26,7 +27,7 @@ export default class Story extends React.Component {
             .then((story) => this.setState({ story }))
             .then(() => this.state.story.kids)
             .then((ids) => {
-                if(ids !== undefined) {
+                if (ids !== undefined) {
                     return getComments(ids)
                 }
                 return []
@@ -37,32 +38,38 @@ export default class Story extends React.Component {
     render() {
         const { story, comments } = this.state
         return (
-            <React.Fragment>
+            <ThemeConsumer>
                 {
-                    story == null
-                        ? <Loading text='Story is Loading' />
-                        : <React.Fragment>
-                            <p className='dark-comment-title'>{story.title}</p>
-                            <MetaInfo by={story.by} time={story.time} comments={story.descendants} storyId={story.id} />
-                        </React.Fragment>
-                }
-
-                {
-                    story != null && (comments == null
-                        ? <Loading text='Story comments are loading' />
-                        : <React.Fragment>
+                    ({ theme }) => (
+                        <React.Fragment>
                             {
-                                comments.map((comment) => (
-                                    <div key={comment.id} className='bg-light card'>
-                                        <MetaInfo by={comment.by} time={comment.time} />
-                                        <p dangerouslySetInnerHTML={{ __html: comment.text }} />
-                                    </div>
-                                ))
+                                story == null
+                                    ? <Loading text='Story is Loading' />
+                                    : <React.Fragment>
+                                        <p className={ theme == 'light' ? 'title dark-color' : 'title light-color'}>{story.title}</p>
+                                        <MetaInfo by={story.by} time={story.time} comments={story.descendants} storyId={story.id} />
+                                    </React.Fragment>
                             }
 
-                        </React.Fragment>)
+                            {
+                                story != null && (comments == null
+                                    ? <Loading text='Story comments are loading' />
+                                    : <React.Fragment>
+                                        {
+                                            comments.map((comment) => (
+                                                <div key={comment.id} className={`bg-${theme} card`}>
+                                                    <MetaInfo by={comment.by} time={comment.time} />
+                                                    <p dangerouslySetInnerHTML={{ __html: comment.text }} />
+                                                </div>
+                                            ))
+                                        }
+
+                                    </React.Fragment>)
+                            }
+                        </React.Fragment>
+                    )
                 }
-            </React.Fragment>
+            </ThemeConsumer>
         )
     }
 

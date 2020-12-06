@@ -6,22 +6,36 @@ import Nav from './components/Nav'
 import './index.css'
 import User from './components/User'
 import Story from './components/Story'
+import { ThemeProvider } from './contexts/theme'
 
 export class App extends React.Component {
+
+    state = {
+        theme: 'light',
+        toggleTheme: () => {
+            this.setState(({ theme }) => ({
+                theme: theme == 'light' ? 'dark' : 'light'
+            }))
+        }
+    }
 
     render() {
         return (
             <Router>
-                <div className='container'>
-                    <Nav />
-                    <Switch>
-                        <Route exact path='/' render={() => (<Stories type='top' />)} />
-                        <Route path='/new' render={() => (<Stories type='new' />)} />
-                        <Route path='/user' component={User} />
-                        <Route path='/story' component={Story} />
-                        <Route render={() => <h3>Page not found!</h3>}/>
-                    </Switch>
-                </div>
+                <ThemeProvider value={this.state}>
+                    <div className={this.state.theme}>
+                        <div className='container'>
+                            <Nav />
+                            <Switch>
+                                <Route exact path='/' render={() => (<Stories type='top' />)} />
+                                <Route path='/new' render={() => (<Stories type='new' />)} />
+                                <Route path='/user' component={User} />
+                                <Route path='/story' component={Story} />
+                                <Route render={() => <h3>Page not found!</h3>} />
+                            </Switch>
+                        </div>
+                    </div>
+                </ThemeProvider>
             </Router>
         )
     }
