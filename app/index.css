@@ -48,3 +48,18 @@ a.no-style {
 .light-text {
     color: gray
 }
+
+.meta-info {
+    margin-top: 0px;
+}
+
+.dark-title {
+    color: black;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-top: 10px;
+}
+.light-text a {
+    color: black;
+}
