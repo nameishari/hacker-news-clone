@@ -1,7 +1,6 @@
 import * as React from 'react'
 import PropTypes from 'prop-types'
-import { formatDate } from '../util/DateUtil'
-import { Link } from 'react-router-dom'
+import MetaInfo from './MetaInfo'
 
 const styles = {
     title: {
@@ -19,15 +18,7 @@ export default function StoriesList({ stories }) {
                 stories.map((story) => (
                     <li key={story.id}>
                         <p style={styles.title}><a href={story.url} target='_blank' className='no-style'>{story.title}</a></p>
-                        <p className='light-text meta-info'>
-                            {
-                                <React.Fragment>
-                                    <span>by <Link to={{ pathname: '/user/', search: `?id=${story.by}` }}>{story.by}</Link> </span>
-                                    <span>on {formatDate(story.time)} </span>
-                                    <span>with {story.descendants} comments</span>
-                                </React.Fragment>
-                            }
-                        </p>
+                        <MetaInfo by={story.by} time={story.time} comments={story.descendants}/>
                     </li>
                 ))
             }

@@ -4,6 +4,7 @@ import { getUser, getStoriesByIds } from '../util/api'
 import Loading from './Loading'
 import StoriesList from './StoriesList'
 import { formatDate } from '../util/DateUtil'
+import MetaInfo from './MetaInfo'
 
 export default class User extends React.Component {
     state = {
@@ -38,7 +39,7 @@ export default class User extends React.Component {
                         ? <Loading text='User is Loading' />
                         : <React.Fragment>
                             <p className='dark-title'>{user.id}</p>
-                            <p className='light-text meta-info'>{`by ${user.id} on ${formatDate(user.created)} has ${user.karma} karma`}</p>
+                            <MetaInfo by={user.id} time={user.created} karma={user.karma}/>
                         </React.Fragment>
                 }
 
