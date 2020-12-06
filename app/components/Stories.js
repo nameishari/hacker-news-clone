@@ -2,6 +2,7 @@ import * as React from 'react'
 import { getStories } from '../util/api'
 import PropTypes from 'prop-types'
 import Loading from './Loading'
+import StoriesList from './StoriesList'
 
 export default class Stories extends React.Component {
 
@@ -43,13 +44,16 @@ export default class Stories extends React.Component {
     }
 
     render() {
-        const { loading } = this.state
+        const { loading, stories, error } = this.state
         const { type } = this.props
-        if(loading == true) {
-            return <Loading text={`Fetching ${type} stories`}/>
+        if (loading == true) {
+            return <Loading text={`Fetching ${type} stories`} />
+        }
+        if (error) {
+            return <p>{error}</p>
         }
         return (
-            <div>{this.props.type}</div>
+            <StoriesList stories={stories} />
         )
     }
 }

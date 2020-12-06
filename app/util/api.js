@@ -7,15 +7,15 @@ function getItem(id) {
 }
 
 function removeDead(stories) {
-    return stories.reduce(({ dead }) => dead !== true)
+    return stories.filter(({ dead }) => dead !== true)
 }
 
 function removeDeleted(stories) {
-    return stories.reduce(({ deleted }) => deleted !== true)
+    return stories.filter(({ deleted }) => deleted !== true)
 }
 
 function onlyStories(stories) {
-    return stories.reduce(({ type }) => type === 'story')
+    return stories.filter(({ type }) => type === 'story')
 }
 
 export function getStories(type) {
@@ -28,5 +28,5 @@ export function getStories(type) {
             return ids.slice(0, 65)
         })
         .then((ids) => Promise.all(ids.map(getItem)))
-        .then((items) => removeDeleted(removeDead(onlyStories(items))))
+        .then((items) => removeDeleted(onlyStories(removeDead(items))))
 }
