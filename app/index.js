@@ -4,9 +4,11 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import Stories from './components/Stories'
 import Nav from './components/Nav'
 import './index.css'
-import User from './components/User'
-import Story from './components/Story'
 import { ThemeProvider } from './contexts/theme'
+import Loading from './components/Loading'
+
+const Story = React.lazy(() => import('./components/Story'))
+const User = React.lazy(() => import('./components/User'))
 
 export class App extends React.Component {
 
@@ -26,13 +28,15 @@ export class App extends React.Component {
                     <div className={this.state.theme}>
                         <div className='container'>
                             <Nav />
-                            <Switch>
-                                <Route exact path='/' render={() => (<Stories type='top' />)} />
-                                <Route path='/new' render={() => (<Stories type='new' />)} />
-                                <Route path='/user' component={User} />
-                                <Route path='/story' component={Story} />
-                                <Route render={() => <h3>Page not found!</h3>} />
-                            </Switch>
+                            <React.Suspense fallback={<Loading/>}>
+                                <Switch>
+                                    <Route exact path='/' render={() => (<Stories type='top' />)} />
+                                    <Route path='/new' render={() => (<Stories type='new' />)} />
+                                    <Route path='/user' component={User} />
+                                    <Route path='/story' component={Story} />
+                                    <Route render={() => <h3>Page not found!</h3>} />
+                                </Switch>
+                            </React.Suspense>
                         </div>
                     </div>
                 </ThemeProvider>

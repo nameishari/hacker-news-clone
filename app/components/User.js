@@ -3,7 +3,6 @@ import queryString from 'query-string'
 import { getUser, getStoriesByIds } from '../util/api'
 import Loading from './Loading'
 import StoriesList from './StoriesList'
-import { formatDate } from '../util/DateUtil'
 import MetaInfo from './MetaInfo'
 import { ThemeConsumer } from '../contexts/theme'
 
