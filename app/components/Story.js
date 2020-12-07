@@ -3,74 +3,79 @@ import { getItem, getComments } from '../util/api'
 import MetaInfo from './MetaInfo'
 import Loading from './Loading'
 import queryString from 'query-string'
-import { ThemeConsumer } from '../contexts/theme'
+import ThemeContext from '../contexts/theme'
 
-export default class Story extends React.Component {
-
-    state = {
-        story: null,
-        comments: null
+function storyReducer(state, action) {
+    switch (action.type) {
+        case 'fetch':
+            return {
+                story: null,
+                comments: null
+            }
+        case 'user-fetched':
+            return {
+                story: action.story,
+                comments: null
+            }
+        case 'comments-fetched':
+            return {
+                ...state,
+                comments: action.comments
+            }
+        default:
+            throw new Error('Not supported!')
     }
+}
+export default function Story() {
+    const [state, dispatch] = React.useReducer(storyReducer, { story: null, comments: null })
+    const theme = React.useContext(ThemeContext)
+    const { id } = queryString.parse(location.search)
 
-    componentDidMount() {
-        const { id } = queryString.parse(this.props.location.search)
-        this.handleFetch(id)
-    }
-
-    handleFetch(id) {
-        this.setState({
-            story: null,
-            comments: null
-        })
+    React.useEffect(() => {
+        dispatch({ type: 'fetch' })
 
         getItem(id)
-            .then((story) => this.setState({ story }))
-            .then(() => this.state.story.kids)
+            .then((story) => {
+                dispatch({ type: 'user-fetched', story })
+                return story.kids
+            })
             .then((ids) => {
                 if (ids !== undefined) {
                     return getComments(ids)
                 }
                 return []
             })
-            .then((comments) => this.setState({ comments }))
-    }
+            .then((comments) => dispatch({ type: 'comments-fetched', comments }))
 
-    render() {
-        const { story, comments } = this.state
-        return (
-            <ThemeConsumer>
-                {
-                    ( theme ) => (
-                        <React.Fragment>
-                            {
-                                story == null
-                                    ? <Loading text='Story is Loading' />
-                                    : <React.Fragment>
-                                        <p className={ theme == 'light' ? 'title dark-color' : 'title light-color'}>{story.title}</p>
-                                        <MetaInfo by={story.by} time={story.time} comments={story.descendants} storyId={story.id} />
-                                    </React.Fragment>
-                            }
+    }, [id])
 
-                            {
-                                story != null && (comments == null
-                                    ? <Loading text='Story comments are loading' />
-                                    : <React.Fragment>
-                                        {
-                                            comments.map((comment) => (
-                                                <div key={comment.id} className={`bg-${theme} card`}>
-                                                    <MetaInfo by={comment.by} time={comment.time} />
-                                                    <p dangerouslySetInnerHTML={{ __html: comment.text }} />
-                                                </div>
-                                            ))
-                                        }
+    const { story, comments } = state
+    return (
+        <React.Fragment>
+            {
+                story == null
+                    ? <Loading text='Story is Loading' />
+                    : <React.Fragment>
+                        <p className={theme == 'light' ? 'title dark-color' : 'title light-color'}>{story.title}</p>
+                        <MetaInfo by={story.by} time={story.time} comments={story.descendants} storyId={story.id} />
+                    </React.Fragment>
+            }
 
-                                    </React.Fragment>)
-                            }
-                        </React.Fragment>
-                    )
-                }
-            </ThemeConsumer>
-        )
-    }
+            {
+                story != null && (comments == null
+                    ? <Loading text='Story comments are loading' />
+                    : <React.Fragment>
+                        {
+                            comments.map((comment) => (
+                                <div key={comment.id} className={`bg-${theme} card`}>
+                                    <MetaInfo by={comment.by} time={comment.time} />
+                                    <p dangerouslySetInnerHTML={{ __html: comment.text }} />
+                                </div>
+                            ))
+                        }
 
+                    </React.Fragment>)
+            }
+        </React.Fragment >
+    )
 }
