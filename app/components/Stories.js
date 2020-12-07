@@ -4,58 +4,48 @@ import PropTypes from 'prop-types'
 import Loading from './Loading'
 import StoriesList from './StoriesList'
 
-export default class Stories extends React.Component {
-
-    state = {
-        stories: null,
-        error: null,
-        loading: true
+function storiesReducer(state, action) {
+    switch (action.type) {
+        case 'fetch':
+            return {
+                ...state,
+                loading: true
+            }
+        case 'success':
+            return {
+                stories: action.stories,
+                loading: false,
+                error: null
+            }
+        case 'error':
+            return {
+                ...state,
+                loading: false,
+                error: action.message
+            }
+        default:
+            throw new Error('Not supported!')
     }
+}
 
-    componentDidMount() {
-        this.handleGetStories()
+export default function Stories({ type }) {
+    const [state, dispatch] = React.useReducer(storiesReducer, { stories: null, error: null, loading: true })
+    React.useEffect(() => {
+        dispatch({ type: 'fetch' })
+        getStories(type)
+            .then((stories) => dispatch({ type: 'success', stories }))
+            .catch((message) => dispatch({ type: 'error', message }))
+    }, [type])
+    const { loading, stories, error } = state
+    if (loading == true) {
+        return <Loading text={`Fetching ${type} stories`} />
     }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.type !== this.props.type) {
-            this.handleGetStories()
-        }
+    if (error) {
+        return <p>{error}</p>
     }
-
-    handleGetStories() {
-        this.setState({
-            stories: null,
-            error: null,
-            loading: true
-        })
-
-        getStories(this.props.type)
-            .then((stories) =>
-                this.setState({
-                    stories,
-                    loading: false
-                })
-            ).catch((error) =>
-                this.setState({
-                    error,
-                    loading: false
-                })
-            )
-    }
-
-    render() {
-        const { loading, stories, error } = this.state
-        const { type } = this.props
-        if (loading == true) {
-            return <Loading text={`Fetching ${type} stories`} />
-        }
-        if (error) {
-            return <p>{error}</p>
-        }
-        return (
-            <StoriesList stories={stories} />
-        )
-    }
+    return (
+        <StoriesList stories={stories} />
+    )
 }
 
 Stories.propTypes = {
