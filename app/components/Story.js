@@ -40,7 +40,7 @@ export default class Story extends React.Component {
         return (
             <ThemeConsumer>
                 {
-                    ({ theme }) => (
+                    ( theme ) => (
                         <React.Fragment>
                             {
                                 story == null

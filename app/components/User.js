@@ -35,7 +35,7 @@ export default class User extends React.Component {
         return (
             <ThemeConsumer>
                 {
-                    ({ theme }) => (
+                    ( theme ) => (
                         <React.Fragment>
                             {
                                 user === null

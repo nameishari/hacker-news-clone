@@ -10,39 +10,31 @@ import Loading from './components/Loading'
 const Story = React.lazy(() => import('./components/Story'))
 const User = React.lazy(() => import('./components/User'))
 
-export class App extends React.Component {
-
-    state = {
-        theme: 'light',
-        toggleTheme: () => {
-            this.setState(({ theme }) => ({
-                theme: theme == 'light' ? 'dark' : 'light'
-            }))
-        }
+export function App() {
+    const [theme, setTheme] = React.useState('light')
+    const toggleTheme = () => {
+        setTheme((theme) => theme == 'light' ? 'dark' : 'light')
     }
-
-    render() {
-        return (
-            <Router>
-                <ThemeProvider value={this.state}>
-                    <div className={this.state.theme}>
-                        <div className='container'>
-                            <Nav />
-                            <React.Suspense fallback={<Loading/>}>
-                                <Switch>
-                                    <Route exact path='/' render={() => (<Stories type='top' />)} />
-                                    <Route path='/new' render={() => (<Stories type='new' />)} />
-                                    <Route path='/user' component={User} />
-                                    <Route path='/story' component={Story} />
-                                    <Route render={() => <h3>Page not found!</h3>} />
-                                </Switch>
-                            </React.Suspense>
-                        </div>
+    return (
+        <Router>
+            <ThemeProvider value={theme}>
+                <div className={theme}>
+                    <div className='container'>
+                        <Nav toggleTheme={toggleTheme}/>
+                        <React.Suspense fallback={<Loading />}>
+                            <Switch>
+                                <Route exact path='/' render={() => (<Stories type='top' />)} />
+                                <Route path='/new' render={() => (<Stories type='new' />)} />
+                                <Route path='/user' component={User} />
+                                <Route path='/story' component={Story} />
+                                <Route render={() => <h3>Page not found!</h3>} />
+                            </Switch>
+                        </React.Suspense>
                     </div>
-                </ThemeProvider>
-            </Router>
-        )
-    }
+                </div>
+            </ThemeProvider>
+        </Router>
+    )
 }
 
 ReactDOM.render(<App />, document.getElementById('app'))
