@@ -1,4 +1,4 @@
-# hacker-news-clone
+# Hacker News Clone
 
 This is a soft clone of hacker news (https://news.ycombinator.com/)
 
